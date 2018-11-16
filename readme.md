@@ -27,3 +27,6 @@ Basic todo app written in Laravel and Vue.js
 
 #### Run the database migrations (Set the database connection in .env before migrating)
 `php artisan migrate`
+
+### DEMO
+Live demo available at https://laravel57-vuejs-demo.rmtcfm.com
