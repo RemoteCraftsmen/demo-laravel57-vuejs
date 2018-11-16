@@ -2,7 +2,6 @@
 Basic todo app written in Laravel and Vue.js
 
 ### Prerequisites
-* Node - v10.11.0
 * NPM - v6.4.1
 * Docker - v18.06.1 (optional)
 
@@ -15,6 +14,7 @@ Basic todo app written in Laravel and Vue.js
 `composer install`
 
 `npm install`
+`npm run production`
 
 #### docker setup
 `docker-compose up --build`
