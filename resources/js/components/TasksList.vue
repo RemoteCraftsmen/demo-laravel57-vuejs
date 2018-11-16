@@ -23,7 +23,7 @@
                     <input v-show="editing && editingIndex === index" class="col-sm-12 invisible-center" type="text"
                            name="name"
                            v-model="task.name" :ref="'title'"
-                           placeholder="Enter task" @change="save(task, $event)" @blur="edit(index)">
+                           placeholder="Enter task" @change="save(task, index, $event)" @blur="edit(index)">
                 </td>
                 <td v-on:click="changeStatus(task, index)">
                     <i v-if="task.completed" class="fas fa-check-circle"></i>
@@ -54,11 +54,12 @@
         methods: {
             destroy(task, index) {
                 axios.delete('api' + task.path, task.id)
-                    .then(() => {
+                    .then(
+                        () => {
                             this.tasks.splice(index, 1);
                             this.$forceUpdate();
                         },
-                        (error) => {
+                        error => {
                             alert(error);
                         });
             },
@@ -78,22 +79,29 @@
                     input.focus();
                 });
             },
-            save(task, event) {
+            save(task, index, event) {
                 task.column = event.target.name;
                 axios.patch('api/tasks/update/column/' + task.id, task)
                     .then(
-                        (error) => {
+                        () => {
+                            this.$nextTick(() => {
+                                let input = this.$refs.title[index];
+                                input.blur();
+                            });
+                        },
+                        error => {
                             alert(error);
                         }
                     );
             },
             changeStatus(task) {
                 axios.patch('api/tasks/complete/' + task.id, task)
-                    .then(response => {
+                    .then(
+                        response => {
                             task.completed = response.data.completed;
                             this.$forceUpdate();
                         },
-                        (error) => {
+                        error => {
                             alert(error);
                         }
                     );
