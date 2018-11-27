@@ -55,8 +55,9 @@ dbrebuild() {
 configure() {
     if [ ! -f .env ]; then
         cp .env.example .env;
+        docker-compose exec php php artisan key:generate;
     fi;
-    curl -fsSL 'https://getcomposer.org/composer.phar' -o ./composer.phar
+    curl -fsSL 'https://getcomposer.org/composer.phar' -o ./composer.phar;
 }
 
 php() {
