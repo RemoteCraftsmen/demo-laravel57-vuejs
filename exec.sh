@@ -68,9 +68,12 @@ composer() {
     if [ ! -f composer.phar ]; then
         configure;
     fi;
-    docker-compose exec php php composer.phar --prefer-dist ${@};
+    docker-compose exec php php composer.phar ${@};
 }
 
+test() {
+    docker-compose exec php ./vendor/bin/phpunit --testdox
+}
 #---------------------#
 #----- Execution -----#
 #---------------------#

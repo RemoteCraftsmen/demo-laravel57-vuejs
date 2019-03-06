@@ -31,7 +31,7 @@ class TaskController
 
     public function updateByColumn(int $id): JsonResponse
     {
-        $task = Task::find($id);
+        $task = Task::findOrFail($id);
         $loggedUserId = Auth::id();
         $user = $task->user;
 
@@ -54,7 +54,7 @@ class TaskController
     {
         $loggedUserId = Auth::id();
         /** @var Task $task */
-        $task = Task::find($id);
+        $task = Task::findOrFail($id);
         $user = $task->user;
 
         if ($loggedUserId !== $user->id) {
