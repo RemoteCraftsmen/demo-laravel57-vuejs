@@ -1,5 +1,20 @@
 <template>
-    <div>
+    <div class="loader-container" v-if="loader">
+        <div class="lds-ripple">
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+    <div v-else>
+        <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+            <button
+                    @click="add"
+                    type="submit"
+                    class="btn btn-success pull-right">
+                <i class="fa fa-plus"></i>
+                Add New
+            </button>
+        </div>
         <confirmation-modal
                 @confirmed="confirmed"
                 :message="'Are you sure you want to delete this estimate?'">
@@ -25,8 +40,8 @@
                            v-model="task.name" :ref="'title'"
                            placeholder="Enter task" @change="save(task, index, $event)" @blur="edit(index)">
                 </td>
-                <td v-on:click="changeStatus(task, index)">
-                    <i v-if="task.completed" class="fas fa-check-circle"></i>
+                <td class="status-row" v-on:click="changeStatus(task, index)">
+                    <i v-if="task.completed" class="fa fa-check-circle"></i>
                     <i v-else class="fa fa-circle"></i>
                 </td>
                 <td>
@@ -43,17 +58,29 @@
 
     export default {
         components: {ConfirmationModal},
-        props: ['tasks'],
         data() {
             return {
+                loader: true,
+                tasks: [],
                 editing: false,
                 editingIndex: null,
                 task: {},
             }
         },
+        mounted() {
+            this.$http.get('/api/tasks').then((response) => {
+                this.tasks = response.data.tasks;
+                this.loader = false;
+            })
+        },
         methods: {
+            add() {
+                this.$http.post('/api/tasks').then((response) => {
+                    this.tasks.push(response.data.task);
+                })
+            },
             destroy(task, index) {
-                axios.delete('api' + task.path, task.id)
+                this.$http.delete('api' + task.path, task.id)
                     .then(
                         () => {
                             this.tasks.splice(index, 1);
@@ -81,7 +108,7 @@
             },
             save(task, index, event) {
                 task.column = event.target.name;
-                axios.patch('api/tasks/update/column/' + task.id, task)
+                this.$http.patch('/api/tasks/update/column/' + task.id, task)
                     .then(
                         () => {
                             this.$nextTick(() => {
@@ -95,7 +122,7 @@
                     );
             },
             changeStatus(task) {
-                axios.patch('api/tasks/complete/' + task.id, task)
+                this.$http.patch('api/tasks/complete/' + task.id, task)
                     .then(
                         response => {
                             task.completed = response.data.completed;

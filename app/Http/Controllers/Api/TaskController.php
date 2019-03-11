@@ -9,6 +9,28 @@ use Illuminate\Http\Response;
 
 class TaskController
 {
+    public function index()
+    {
+        $loggedUserId = Auth::id();
+        $tasks = Task::where('user_id', $loggedUserId)->get();
+
+        return response()->json(['tasks' => $tasks]);
+    }
+
+    public function store()
+    {
+        $user = Auth::user();
+
+        $task = new Task([
+            'name' => '',
+            'description' => '',
+            'completed' => false,
+        ]);
+        $kra = $user->tasks()->save($task);
+
+        return response()->json(['task' => $kra]);
+    }
+
     public function destroy(Task $task): JsonResponse
     {
         $loggedUserId = Auth::id();

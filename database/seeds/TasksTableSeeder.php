@@ -13,21 +13,20 @@ class TasksTableSeeder extends Seeder
      */
     public function run()
     {
-        $user = User::find(1);
-
+        $user = User::first();
         $task = new Task([
-            'name' => 'zakupy',
+            'name' => 'See newest Marvel movie',
             'completed' => true,
         ]);
         $user->tasks()->save($task);
 
         $task = new Task([
-            'name' => 'xyz',
+            'name' => 'Go to the Gym',
         ]);
         $user->tasks()->save($task);
 
         $task = new Task([
-            'name' => 'zyx',
+            'name' => 'Buy potatoes and tomatoes',
         ]);
         $user->tasks()->save($task);
     }

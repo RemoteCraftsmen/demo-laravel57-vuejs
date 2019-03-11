@@ -21,7 +21,7 @@ class TodoTest extends TestCase
             ]);
         }
 
-        $response = $this->actingAs($user)->get('/tasks');
+        $response = $this->actingAs($user)->get('tasks');
         $tasks = $response->getOriginalContent()->getData();
 
         $response->assertSuccessful();
