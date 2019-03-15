@@ -33,12 +33,18 @@
             <tr v-for="(task, index) in tasks" v-bind:index="index">
                 <td>{{index+1}}</td>
                 <td>
-                    <span v-show="!editing" @click="edit(index)">{{ task.name ? task.name : 'Enter task' }}</span>
-                    <span v-show="editing && editingIndex !== index" @click="edit(index)">{{ task.name ? task.name : 'Enter task' }}</span>
-                    <input v-show="editing && editingIndex === index" class="col-sm-12 invisible-center" type="text"
-                           name="name"
-                           v-model="task.name" :ref="'title'"
-                           placeholder="Enter task" @change="save(task, index, $event)" @blur="edit(index)">
+                    <span v-show="!editing" @click="edit(index)">{{ task.name ? task.name : 'Please enter task name' }}</span>
+                    <span v-show="editing && editingIndex !== index" @click="edit(index)">{{ task.name ? task.name : 'Please enter task name' }}</span>
+                    <input 
+                        v-show="editing && editingIndex === index" 
+                        class="col-sm-12 invisible-center"
+                        type="text"
+                        name="name"
+                        v-model="task.name" :ref="'title'"
+                        placeholder="Please enter task name"
+                        @change="save(task, index, $event)"
+                        @blur="edit(index)"
+                    >
                 </td>
                 <td class="status-row" v-on:click="changeStatus(task, index)">
                     <i v-if="task.completed" class="fa fa-check-circle"></i>
@@ -75,12 +81,12 @@
         },
         methods: {
             add() {
-                this.$http.post('/api/tasks').then((response) => {
+                this.$http.post('/api/tasks', { name : 'Please enter task name' }).then((response) => {
                     this.tasks.push(response.data.task);
                 })
             },
             destroy(task, index) {
-                this.$http.delete('api' + task.path, task.id)
+                this.$http.delete('/api' + task.path, task.id)
                     .then(
                         () => {
                             this.tasks.splice(index, 1);
@@ -108,7 +114,7 @@
             },
             save(task, index, event) {
                 task.column = event.target.name;
-                this.$http.patch('/api/tasks/update/column/' + task.id, task)
+                this.$http.patch('/api/tasks/' + task.id, task)
                     .then(
                         () => {
                             this.$nextTick(() => {
@@ -122,7 +128,7 @@
                     );
             },
             changeStatus(task) {
-                this.$http.patch('api/tasks/complete/' + task.id, task)
+                this.$http.patch('/api/tasks/' + task.id + '/complete', task)
                     .then(
                         response => {
                             task.completed = response.data.completed;

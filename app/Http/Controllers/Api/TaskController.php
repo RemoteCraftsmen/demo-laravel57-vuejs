@@ -2,88 +2,67 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
+
 use App\Task;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Response;
+use Illuminate\Http\Request;
 
-class TaskController
+class TaskController extends Controller
 {
     public function index()
     {
-        $loggedUserId = Auth::id();
-        $tasks = Task::where('user_id', $loggedUserId)->get();
-
-        return response()->json(['tasks' => $tasks]);
+        return ['tasks' => Auth::user()->tasks];
     }
 
-    public function store()
+    public function store(Request $request)
     {
         $user = Auth::user();
-
-        $task = new Task([
-            'name' => '',
-            'description' => '',
+        $task = $user->tasks()->create([
+            'name' => $request->name,
             'completed' => false,
         ]);
-        $kra = $user->tasks()->save($task);
 
-        return response()->json(['task' => $kra]);
+        return response(compact('task'), RESPONSE::HTTP_CREATED);
     }
 
-    public function destroy(Task $task): JsonResponse
+    public function destroy(Task $task)
     {
-        $loggedUserId = Auth::id();
         $user = $task->user;
 
-        if ($loggedUserId !== $user->id) {
-            return response()
-                ->json(['status' => 'error', 'error' => 'Forbidden!'])
-                ->setStatusCode(Response::HTTP_FORBIDDEN);
-        }
+        $this->authorize('update', $task);
 
         try {
             $task->delete();
         } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'error' => 'Delete unsuccessful'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response(['status' => 'error', 'error' => 'Delete unsuccessful'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return response()->json(['status' => true, 'deleted' => true]);
+        return ['status' => true, 'deleted' => true];
     }
 
-    public function updateByColumn(int $id): JsonResponse
+    public function patch(Task $task, Request $request)
     {
-        $task = Task::findOrFail($id);
-        $loggedUserId = Auth::id();
         $user = $task->user;
 
-        if ($loggedUserId !== $user->id) {
-            return response()
-                ->json(['status' => 'error', 'error' => 'Forbidden!'])
-                ->setStatusCode(Response::HTTP_FORBIDDEN);
-        }
+        $this->authorize('update', $task);
 
-        $column = request('column');
+        $column = $request->column;
 
         $task->update([
-            $column => request($column)
+            $column => $request->$column
         ]);
 
-        return response()->json(['status' => true, 'updated' => true]);
+        return ['status' => true, 'updated' => true];
     }
 
-    public function changeStatusOfTask(int $id): JsonResponse
+    public function changeStatus(Task $task)
     {
-        $loggedUserId = Auth::id();
-        /** @var Task $task */
-        $task = Task::findOrFail($id);
         $user = $task->user;
 
-        if ($loggedUserId !== $user->id) {
-            return response()
-                ->json(['status' => 'error', 'error' => 'Forbidden!'])
-                ->setStatusCode(Response::HTTP_FORBIDDEN);
-        }
+        $this->authorize('update', $task);
 
         $task->update(['completed' => !$task->completed]);
 

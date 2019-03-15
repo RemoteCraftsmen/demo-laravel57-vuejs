@@ -52,6 +52,10 @@ dbrebuild() {
     docker-compose exec php php artisan config:clear;
 }
 
+artisan() {
+    docker-compose exec php php artisan ${@}
+}
+
 configure() {
     if [ ! -f .env ]; then
         cp .env.example .env;
@@ -72,7 +76,7 @@ composer() {
 }
 
 test() {
-    docker-compose exec php ./vendor/bin/phpunit --testdox
+    docker-compose exec php ./vendor/bin/phpunit --testdox ${@}
 }
 #---------------------#
 #----- Execution -----#

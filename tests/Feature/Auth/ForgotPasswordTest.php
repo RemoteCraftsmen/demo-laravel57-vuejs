@@ -34,6 +34,7 @@ class ForgotPasswordTest extends TestCase
     public function test_user_receives_an_email_with_a_password_reset_link()
     {
         Notification::fake();
+
         $user = factory(User::class)->create([
             'email' => 'john@example.com',
         ]);
@@ -42,9 +43,10 @@ class ForgotPasswordTest extends TestCase
             'email' => 'john@example.com',
         ]);
 
-        $this->assertNotNull($token = DB::table('password_resets')->first());
-        Notification::assertSentTo($user, ResetPassword::class, function ($notification, $channels) use ($token) {
-            return Hash::check($notification->token, $token->token) === true;
+        $this->assertNotNull($passwordReset = DB::table('password_resets')->first());
+        
+        Notification::assertSentTo($user, ResetPassword::class, function ($notification, $channels) use ($passwordReset) {
+            return Hash::check($notification->token, $passwordReset->token) === true;
         });
     }
 
@@ -58,6 +60,7 @@ class ForgotPasswordTest extends TestCase
 
         $response->assertRedirect('/password/email');
         $response->assertSessionHasErrors('email');
+
         Notification::assertNotSentTo(factory(User::class)->make(['email' => 'nobody@example.com']), ResetPassword::class);
     }
 

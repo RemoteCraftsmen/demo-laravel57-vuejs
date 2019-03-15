@@ -37,9 +37,11 @@ describe('TodoList', () => {
 
     beforeEach((done) => {
         moxios.install();
+        
         wrapper = mount(TaskList, {
             localVue
         });
+        
         moxios.wait(() => {
             wrapper.setData({
                 loader: false,
@@ -117,6 +119,7 @@ describe('TodoList', () => {
                 ]
             }
         });
+        
         wrapper.setData({
             tasks: [
                 {
@@ -127,7 +130,7 @@ describe('TodoList', () => {
             ]
         });
 
-        let addingButton = wrapper.find('button.btn.btn-success');
+        const addingButton = wrapper.find('button.btn.btn-success');
 
         expect(wrapper.vm.tasks.length).toEqual(1);
 
@@ -151,6 +154,7 @@ describe('TodoList', () => {
                 },
             ]
         });
+        
         expect(wrapper.find('input[name="name"]').isVisible()).toBe(false);
 
         wrapper.find('table>tbody>tr>td>span').trigger('click');
@@ -159,13 +163,14 @@ describe('TodoList', () => {
     });
 
     it('can update task after clicking its name', async () => {
-        moxios.stubOnce('PATCH', '/api/tasks/update/column/0', {
+        moxios.stubOnce('PATCH', '/api/tasks/0', {
             status: 200,
             response: {
                 status: true,
                 updated: true
             }
         });
+        
         wrapper.setData({
             tasks: [
                 {
@@ -180,7 +185,8 @@ describe('TodoList', () => {
 
         await wrapper.vm.$nextTick();
 
-        let input = wrapper.find('input[name="name"]');
+        const input = wrapper.find('input[name="name"]');
+        
         input.setValue("updated todo");
         input.trigger('change');
 
@@ -190,13 +196,14 @@ describe('TodoList', () => {
     });
 
     it('can update status of task after clicking its icon', (done) => {
-        moxios.stubOnce('PATCH', 'api/tasks/complete/0', {
+        moxios.stubOnce('PATCH', '/api/tasks/0/complete', {
             status: 200,
             response: {
                 status: true,
                 completed: true
             }
         });
+        
         wrapper.setData({
             tasks: [
                 {
@@ -209,7 +216,7 @@ describe('TodoList', () => {
 
         expect(wrapper.html()).toContain('fa-circle');
 
-        let statusIcon = wrapper.find('.status-row');
+        const statusIcon = wrapper.find('.status-row');
 
         statusIcon.trigger('click');
 
