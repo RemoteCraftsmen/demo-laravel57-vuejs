@@ -138,7 +138,7 @@ describe('TodoList', () => {
 
         moxios.wait(() => {
             expect(wrapper.vm.tasks.length).toEqual(2);
-            expect(wrapper.html()).toContain('Enter task');
+            expect(wrapper.html()).toContain('Please enter task name');
             expect(wrapper.findAll('td>i.fa').at(1).classes()).toContain('fa-circle');
             done();
         });

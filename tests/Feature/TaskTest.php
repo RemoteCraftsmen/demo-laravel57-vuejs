@@ -66,7 +66,7 @@ class TaskTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $response = $this->actingAs($user)->post('/api/tasks');
+        $response = $this->actingAs($user)->post('/api/tasks', ['name' => 'test']);
         $response->assertJson([
             'task' => $user->tasks[0]->toArray()
         ]);
