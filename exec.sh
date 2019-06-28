@@ -1,5 +1,9 @@
 #!/bin/bash
 
+LC_ALL="en_US.UTF-8";
+LANG="en_US.UTF-8";
+LANGUAGE="en_US:en";
+
 #-------------------#
 #----- Helpers -----#
 #-------------------#
@@ -20,7 +24,7 @@ fn_exists() {
     type $1 2>/dev/null | grep -q 'is a function'
 }
 
-COMMAND=$1
+COMMAND="$1"
 shift
 ARGUMENTS="${@}"
 
